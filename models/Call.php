@@ -58,6 +58,7 @@ class Call extends ActiveRecord
             [['ins_ts'], 'safe'],
             [['direction', 'phone_from', 'phone_to', 'type', 'status', 'viewed'], 'required'],
             [['direction', 'user_id', 'customer_id', 'type', 'status'], 'integer'],
+            [['direction', 'in', 'range' => [self::DIRECTION_INCOMING, self::DIRECTION_OUTGOING]]],
             [['phone_from', 'phone_to', 'outcome'], 'string', 'max' => 255],
             [['customer_id'], 'exist', 'skipOnError' => true, 'targetClass' => Customer::class, 'targetAttribute' => ['customer_id' => 'id']],
             [['user_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['user_id' => 'id']],
@@ -104,28 +105,18 @@ class Call extends ActiveRecord
     /**
      * @return string
      */
-    public function getClient_phone()
+    public function getClientPhone()
     {
         return $this->direction == self::DIRECTION_INCOMING ? $this->phone_from : $this->phone_to;
     }
 
     /**
-     * @return mixed|string
+     * @return string
      */
     public function getTotalStatusText()
     {
-        if (
-            $this->status == self::STATUS_NO_ANSWERED
-            && $this->direction == self::DIRECTION_INCOMING
-        ) {
-            return Yii::t('app', 'Missed Call');
-        }
-
-        if (
-            $this->status == self::STATUS_NO_ANSWERED
-            && $this->direction == self::DIRECTION_OUTGOING
-        ) {
-            return Yii::t('app', 'Client No Answer');
+        if ($this->status == self::STATUS_NO_ANSWERED) {
+            return Yii::t('app', $this->direction == self::DIRECTION_INCOMING ? 'Missed Call' : 'Client No Answer');
         }
 
         $msg = $this->getFullDirectionText();
@@ -162,11 +153,13 @@ class Call extends ActiveRecord
     }
 
     /**
-     * @return mixed|string
+     * @return string
      */
     public function getFullDirectionText()
     {
-        return self::getFullDirectionTexts()[$this->direction] ?? $this->direction;
+        return self::getFullDirectionTexts()[
+            $this->direction == self::DIRECTION_INCOMING ? self::DIRECTION_INCOMING : self::DIRECTION_OUTGOING
+        ] ;
     }
 
     /**

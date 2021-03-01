@@ -1,6 +1,6 @@
 <?php
 
-namespace app\widgets\Export;
+namespace app\widgets\HistoryList;
 
 use kartik\export\ExportMenu;
 use Yii;

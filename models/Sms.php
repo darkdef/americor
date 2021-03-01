@@ -62,6 +62,7 @@ class Sms extends ActiveRecord
         return [
             [['phone_to', 'direction'], 'required'],
             [['user_id', 'customer_id', 'status', 'direction', 'applicant_id', 'type'], 'integer'],
+            [['direction', 'in', 'range' => [self::DIRECTION_INCOMING, self::DIRECTION_OUTGOING]]],
             [['message'], 'string'],
             [['ins_ts'], 'safe'],
             [['phone_from', 'phone_to'], 'string', 'max' => 255],
@@ -155,15 +156,15 @@ class Sms extends ActiveRecord
 
     /**
      * @param $value
-     * @return mixed
+     * @return string
      */
     public static function getDirectionTextByValue($value)
     {
-        return self::getDirectionTexts()[$value] ?? $value;
+        return self::getDirectionTexts()[$value == self::DIRECTION_INCOMING ? self::DIRECTION_INCOMING : self::DIRECTION_OUTGOING];
     }
 
     /**
-     * @return mixed|string
+     * @return string
      */
     public function getDirectionText()
     {

@@ -48,6 +48,16 @@ class HistorySearch extends History
         ]);
 
         $dataProvider->setSort([
+            'attributes' => [
+                'ins_ts' => [
+                    'asc' => ['history.ins_ts' => SORT_ASC],
+                    'desc' => ['history.ins_ts' => SORT_DESC]
+                ],
+                'id' => [
+                    'asc' => ['history.id' => SORT_ASC],
+                    'desc' => ['history.id' => SORT_DESC]
+                ],
+            ],
             'defaultOrder' => [
                 'ins_ts' => SORT_DESC,
                 'id' => SORT_DESC
@@ -70,6 +80,7 @@ class HistorySearch extends History
             'task',
             'call',
             'fax',
+            'task.customer',
         ]);
 
         return $dataProvider;
